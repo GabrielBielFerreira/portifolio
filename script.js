@@ -64,84 +64,203 @@ document.addEventListener('DOMContentLoaded', function() {
     checkAnimations();
     window.addEventListener('scroll', checkAnimations);
 
-    // ===== CARROSSEL DE PROJETOS MELHORADO =====
+    // ===== CARROSSEL DE PROJETOS APRIMORADO =====
     if (projectsSlider) {
-        let currentPosition = 0;
-        let projectCards = document.querySelectorAll('.project-card');
-        const totalCards = projectCards.length;
-        let visibleCards = 3; // Padrão para desktop
-        let cardWidth = 0;
-        let gapSize = 0;
-        
-        function calculateCardWidth() {
-            const sliderWidth = projectsSlider.clientWidth;
-            // lê gap real do CSS (.projects-slider { gap: X })
-            gapSize = parseFloat(getComputedStyle(projectsSlider).gap) || 0;
+        // Verificar se os botões do carrossel existem
+        if (carouselBtns.length < 2) {
+            console.warn('Botões do carrossel não encontrados. Verifique os seletores.');
+        } else {
+            // Configurações iniciais
+            let currentPosition = 0;
+            let visibleCards = 3; // Padrão para desktop
+            let cardWidth = 0;
+            let gapSize = 20; // Valor padrão de gap
+            let totalCards = 0;
+            let maxPosition = 0;
             
-            // define quantos cards aparecem de uma vez
-            if (window.innerWidth <= 576) {
-                visibleCards = 1;
-            } else if (window.innerWidth <= 768) {
-                visibleCards = 1;
-            } else if (window.innerWidth <= 992) {
-                visibleCards = 2;
-            } else {
-                visibleCards = 3;
+            // Função para obter os cards atualizados
+            function getProjectCards() {
+                return Array.from(document.querySelectorAll('.project-card'));
             }
             
-            // calcula largura (incluindo gaps)
-            cardWidth = (sliderWidth - (gapSize * (visibleCards - 1))) / visibleCards;
+            // Função para calcular dimensões responsivas
+            function calculateCarouselDimensions() {
+                // Verificar se o projectsSlider existe antes de prosseguir
+                if (!projectsSlider) {
+                    console.error('projects-slider não encontrado no DOM');
+                    return;
+                }
+                
+                const projectCards = getProjectCards();
+                totalCards = projectCards.length;
+                
+                // Verificar se existem cards no carrossel
+                if (totalCards === 0) {
+                    console.warn('Nenhum card de projeto encontrado.');
+                    // Esconder os botões de navegação se não houver cards
+                    carouselBtns.forEach(btn => btn.style.display = 'none');
+                    return;
+                }
+                
+                // Resto do código com verificações adicionais de segurança
+                projectsSlider.style.transition = 'none';
+                
+                // Usar getBoundingClientRect para dimensões mais precisas
+                const carouselContainer = projectsSlider.closest('.carousel');
+                const containerWidth = carouselContainer ? carouselContainer.getBoundingClientRect().width : projectsSlider.parentElement.getBoundingClientRect().width;
+                
+                // Debug para dispositivos móveis
+                console.log('Container width:', containerWidth);
+                
+                // Ajuste para telas muito pequenas
+                if (window.innerWidth <= 480) {
+                    visibleCards = 1;
+                    // Forçar exibição em tela cheia em dispositivos muito pequenos
+                    cardWidth = containerWidth - 20; // Remover apenas o padding lateral
+                } else if (window.innerWidth <= 576) {
+                    visibleCards = 1;
+                } else if (window.innerWidth <= 768) {
+                    visibleCards = 1;
+                } else if (window.innerWidth <= 992) {
+                    visibleCards = 2;
+                } else {
+                    visibleCards = 3;
+                }
+                
+                // Verificação adicional para evitar problemas com CSS não carregado
+                try {
+                    const computedStyle = window.getComputedStyle(projectsSlider);
+                    gapSize = parseInt(computedStyle.gap) || parseInt(computedStyle.columnGap) || 20;
+                } catch (e) {
+                    gapSize = 20;
+                    console.warn('Erro ao obter o gap do CSS:', e);
+                }
+                
+                // Garantir cardWidth mínimo para evitar layout quebrado
+                cardWidth = Math.max((containerWidth - (gapSize * (visibleCards - 1))) / visibleCards, 250);
+                
+                // Aplicar as dimensões
+                projectCards.forEach(card => {
+                    card.style.width = `${cardWidth}px`;
+                    card.style.minWidth = `${cardWidth}px`;
+                    // Debug para dispositivos móveis
+                    console.log('Card width set to:', cardWidth);
+                });
+                
+                // Recalcular maxPosition apenas se houver cards suficientes
+                if (totalCards > visibleCards) {
+                    const totalWidth = (cardWidth * totalCards) + (gapSize * (totalCards - 1));
+                    const visibleWidth = containerWidth;
+                    maxPosition = visibleWidth - totalWidth;
+                    
+                    // Debug para valores críticos
+                    console.log('Total width:', totalWidth);
+                    console.log('Visible width:', visibleWidth);
+                    console.log('Max position:', maxPosition);
+                } else {
+                    maxPosition = 0;
+                    currentPosition = 0;
+                }
+                
+                // Garantir que a posição atual esteja dentro dos limites
+                if (currentPosition < maxPosition) {
+                    currentPosition = maxPosition;
+                }
+                
+                // Aplicar a posição
+                projectsSlider.style.transform = `translateX(${currentPosition}px)`;
+                
+                // Restaurando a transição suave após os cálculos
+                setTimeout(() => {
+                    projectsSlider.style.transition = 'transform 0.4s ease-in-out';
+                }, 50);
+                
+                // Atualizar os botões
+                updateButtonsVisibility();
+            }
             
-            projectCards.forEach(card => {
-                card.style.minWidth = `${cardWidth}px`;
-                card.style.maxWidth = `${cardWidth}px`;
-                card.style.flexShrink = '0'; // impede encolhimento
+            // Função para atualizar a visibilidade dos botões com base na posição atual
+            function updateButtonsVisibility() {
+                // Botão anterior (mostrar apenas se não estiver no início)
+                carouselBtns[0].style.opacity = currentPosition < 0 ? '1' : '0.5';
+                
+                // Botão próximo (mostrar apenas se não estiver no final)
+                carouselBtns[1].style.opacity = currentPosition > maxPosition ? '1' : '0.5';
+                
+                // Se o número de cards for menor ou igual ao número visível, ocultar ambos os botões
+                if (totalCards <= visibleCards) {
+                    carouselBtns.forEach(btn => btn.style.display = 'none');
+                } else {
+                    carouselBtns.forEach(btn => btn.style.display = '');
+                }
+            }
+            
+            // Navegar para a esquerda (botão anterior)
+            carouselBtns[0].addEventListener('click', function() {
+                if (currentPosition < 0) {
+                    // Avançar um card por vez + o espaço do gap
+                    currentPosition += cardWidth + gapSize;
+                    
+                    // Limitar ao início (0)
+                    if (currentPosition > 0) currentPosition = 0;
+                    
+                    // Aplicar a transformação com transição suave
+                    projectsSlider.style.transform = `translateX(${currentPosition}px)`;
+                    
+                    // Atualizar estado dos botões
+                    updateButtonsVisibility();
+                }
             });
             
-            currentPosition = 0;
-            updateCarouselPosition();
+            // Navegar para a direita (botão próximo)
+            carouselBtns[1].addEventListener('click', function() {
+                if (currentPosition > maxPosition) {
+                    // Retroceder um card por vez + o espaço do gap
+                    currentPosition -= cardWidth + gapSize;
+                    
+                    // Limitar ao final (maxPosition)
+                    if (currentPosition < maxPosition) currentPosition = maxPosition;
+                    
+                    // Aplicar a transformação com transição suave
+                    projectsSlider.style.transform = `translateX(${currentPosition}px)`;
+                    
+                    // Atualizar estado dos botões
+                    updateButtonsVisibility();
+                }
+            });
+            
+            // Observador de mutações para detectar mudanças no conteúdo do carrossel
+            const observer = new MutationObserver(function(mutations) {
+                let needsRecalculation = false;
+                
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList' && 
+                        (mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0)) {
+                        needsRecalculation = true;
+                    }
+                });
+                
+                if (needsRecalculation) {
+                    calculateCarouselDimensions();
+                }
+            });
+            
+            // Configurar o observador para monitorar mudanças nos filhos do slider
+            observer.observe(projectsSlider, { childList: true });
+            
+            // Recalcular dimensões ao redimensionar a janela (com debounce)
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(calculateCarouselDimensions, 250);
+            });
+            
+            // Adicionar evento de carregamento para imagens
+            window.addEventListener('load', calculateCarouselDimensions);
+            
+            // Inicializar após um pequeno atraso para garantir que o DOM está completamente carregado
+            setTimeout(calculateCarouselDimensions, 100);
         }
-        
-        // próximo
-        carouselBtns[1].addEventListener('click', () => {
-            const maxSlides = totalCards - visibleCards;
-            const maxPosition = -(maxSlides * (cardWidth + gapSize));
-            if (currentPosition > maxPosition) {
-                currentPosition -= (cardWidth + gapSize);
-                updateCarouselPosition();
-            }
-        });
-        
-        // anterior
-        carouselBtns[0].addEventListener('click', () => {
-            if (currentPosition < 0) {
-                currentPosition += (cardWidth + gapSize);
-                updateCarouselPosition();
-            }
-        });
-        
-        function updateCarouselPosition() {
-            const maxSlides = Math.max(totalCards - visibleCards, 0);
-            const maxPosition = -(maxSlides * (cardWidth + gapSize));
-            
-            // ajusta dentro dos limites
-            currentPosition = Math.max(currentPosition, maxPosition);
-            currentPosition = Math.min(currentPosition, 0);
-            
-            // aplica deslocamento
-            projectsSlider.style.transform = `translateX(${currentPosition}px)`;
-            
-            // atualiza visibilidade das setas
-            carouselBtns[0].style.opacity = currentPosition < 0 ? '1' : '0.5';
-            carouselBtns[1].style.opacity = currentPosition > maxPosition ? '1' : '0.5';
-        }
-        
-        window.addEventListener('resize', () => {
-            projectCards = document.querySelectorAll('.project-card');
-            calculateCardWidth();
-        });
-        
-        calculateCardWidth();
     }
 
     // ===== BOTÃO VOLTAR AO TOPO =====

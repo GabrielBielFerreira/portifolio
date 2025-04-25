@@ -1001,4 +1001,37 @@ a:hover {
     max-width: 100%;
     order: 1;
   }
+}
+
+/* Ajustes para o carrossel em dispositivos móveis */
+@media (max-width: 768px) {
+  .carousel {
+    padding: 0 1.5rem; /* Reduzir o padding lateral */
+    overflow: visible; /* Garante que o conteúdo não seja cortado */
   }
+  
+  .projects-slider {
+    width: auto; /* Permite que o slider se ajuste naturalmente */
+    min-height: 250px; /* Altura mínima para evitar colapso */
+  }
+  
+  .project-card {
+    min-width: 260px; /* Garante uma largura mínima para os cards */
+    max-width: 100%; /* Evita que os cards ultrapassem o container */
+  }
+  
+  /* Botões de navegação mais visíveis em dispositivos móveis */
+  .carousel-btn {
+    width: 2rem;
+    height: 2rem;
+    background-color: rgba(37, 99, 235, 0.8); /* Mais escuro para melhor visibilidade */
+  }
+  
+  .prev-btn {
+    left: 0;
+  }
+  
+  .next-btn {
+    right: 0;
+  }
+}
