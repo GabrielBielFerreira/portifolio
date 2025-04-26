@@ -413,16 +413,12 @@ a:hover {
   transform: scale(1.1);
 }
 
-.download-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem; /* Reduzido de 0.625rem para 0.5rem */
-  margin-top: 0.625rem;
+.curriculo-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
 }
 
-.download-btn i {
-  font-size: 1.2rem;
-}
 
 /* Animações */
 .animated {
