@@ -1,4 +1,4 @@
-// Melhorias no JavaScript para o carrossel responsivo
+// Melhorias no JavaScript para o menu responsivo e carrossel
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos
     const header = document.getElementById('header');
@@ -22,9 +22,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ===== MENU MÓVEL TOGGLE =====
+    // ===== MENU MÓVEL TOGGLE MELHORADO =====
     mobileMenuBtn.addEventListener('click', function() {
-        navLinks.classList.toggle('active');
+        // Se o menu já está ativo e estamos fechando
+        if (navLinks.classList.contains('active')) {
+            // Adiciona classe para animação de fechamento
+            navLinks.classList.add('closing');
+            
+            // Após a animação terminar, remove as classes
+            setTimeout(() => {
+                navLinks.classList.remove('active');
+                navLinks.classList.remove('closing');
+            }, 300); // Tempo igual à duração da animação
+        } else {
+            // Abre o menu
+            navLinks.classList.add('active');
+        }
         
         // Alterna o ícone (hamburger/close)
         const icon = mobileMenuBtn.querySelector('i');
@@ -41,7 +54,16 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.nav-links a').forEach(link => {
         link.addEventListener('click', () => {
             if (window.innerWidth <= 992) {
-                navLinks.classList.remove('active');
+                // Adiciona classe para animação de fechamento
+                navLinks.classList.add('closing');
+                
+                // Após a animação terminar, remove as classes
+                setTimeout(() => {
+                    navLinks.classList.remove('active');
+                    navLinks.classList.remove('closing');
+                }, 300); // Tempo igual à duração da animação
+                
+                // Restaura o ícone do menu
                 mobileMenuBtn.querySelector('i').classList.remove('fa-times');
                 mobileMenuBtn.querySelector('i').classList.add('fa-bars');
             }

@@ -257,10 +257,12 @@ a:hover {
   margin-bottom: 1.5rem;
 }
 
+/* Modificado para garantir que os botões fiquem lado a lado no mobile */
 .hero-buttons {
   display: flex;
   gap: 1rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* Alterado para nowrap para manter os botões lado a lado */
+  justify-content: flex-start; /* Alinha os botões à esquerda */
 }
 
 .hero-buttons .btn {
@@ -271,6 +273,8 @@ a:hover {
   color: #fff;
   background: var(--primary-color);
   transition: background 0.3s ease;
+  flex: 0 1 auto; /* Permite que os botões mantenham seu tamanho natural */
+  min-width: 120px; /* Garante uma largura mínima para os botões */
 }
 
 .hero-buttons .btn:hover {
@@ -706,7 +710,7 @@ a:hover {
   color: #25D366;
 }
 
-/* Footer */
+/* Footer - Modificado conforme requisitos */
 .footer {
   background-color: var(--footer-bg);
   color: var(--footer-text);
@@ -728,6 +732,7 @@ a:hover {
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 2rem;
   margin-bottom: 2rem;
+  text-align: center; /* Centraliza todo o conteúdo do footer */
 }
 
 .footer-about {
@@ -739,6 +744,7 @@ a:hover {
   color: var(--white);
   font-size: 1.375rem;
   margin-bottom: 1.25rem;
+  /* Removida a linha azul sob o título */
 }
 
 .footer-about p {
@@ -752,20 +758,14 @@ a:hover {
   margin-bottom: 1.25rem;
   position: relative;
   display: inline-block;
-}
-
-.footer-links h3::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 0;
-  width: 30px;
-  height: 2px;
-  background-color: var(--primary-color);
+  /* Removida a linha azul sob o título */
 }
 
 .footer-links ul {
   list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centraliza os itens da lista */
 }
 
 .footer-links li {
@@ -773,7 +773,7 @@ a:hover {
 }
 
 .footer-links a {
-  color: var(--footer-text);
+  color: var(--white); /* Alterado para branco */
   font-size: 0.875rem;
   display: flex;
   align-items: center;
@@ -783,14 +783,14 @@ a:hover {
 
 .footer-links a i {
   font-size: 1rem;
-  color: var(--primary-color);
+  color: var(--white); /* Alterado para branco */
   opacity: 0.7;
   transition: var(--transition);
 }
 
 .footer-links a:hover {
   color: var(--white);
-  transform: translateX(5px);
+  transform: translateY(-5px); /* Alterado para movimento vertical */
 }
 
 .footer-links a:hover i {
@@ -803,21 +803,13 @@ a:hover {
   margin-bottom: 1.25rem;
   position: relative;
   display: inline-block;
-}
-
-.footer-social h3::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 0;
-  width: 30px;
-  height: 2px;
-  background-color: var(--primary-color);
+  /* Removida a linha azul sob o título */
 }
 
 .social-icons {
   display: flex;
   gap: 1rem;
+  justify-content: center; /* Centraliza os ícones sociais */
 }
 
 .social-icon {
@@ -829,11 +821,16 @@ a:hover {
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   transition: var(--transition);
+  color: var(--white); /* Alterado para branco */
 }
 
 .social-icon:hover {
   background-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-5px);
+}
+
+.social-icon i {
+  color: var(--white); /* Alterado para branco */
 }
 
 .footer-bottom {
@@ -885,34 +882,35 @@ a:hover {
     font-size: 15px;
   }
   
+  /* Menu mobile modificado para dropdown */
   .nav-links {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 70%;
-    max-width: 300px;
-    height: 100vh;
+    position: absolute;
+    top: -300px; /* Começa fora da tela (acima) */
+    left: 0;
+    width: 100%;
     background-color: var(--white);
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transition: var(--transition);
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-    z-index: 101;
-    padding: 2rem;
+    transition: top 0.3s ease-in-out; /* Animação suave para baixo */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    z-index: 99;
+    padding: 1rem 0;
+    opacity: 0;
   }
   
   .nav-links.active {
-    right: 0;
+    top: 100%; /* Desliza para baixo quando ativo */
+    opacity: 1;
   }
   
   .nav-links li {
-    margin: 1rem 0;
+    margin: 0.75rem 0;
   }
   
   .mobile-menu-btn {
     display: block;
-    z-index: 102;
+    z-index: 100;
   }
   
   .hero {
@@ -957,7 +955,7 @@ a:hover {
   .hero {
     min-height: 50vh;
     padding: 4.5rem 1rem 1.5rem;
-    margin-bottom: -1.5rem; /* Reduz ainda mais o espaço em telas menores */
+    margin-bottom: -1.5rem;
   }
   
   .hero-text h1 {
@@ -973,7 +971,7 @@ a:hover {
   }
   
   .project-card {
-    min-width: 250px; /* Garante largura mínima em mobile */
+    min-width: 250px;
   }
   
   .contact-item {
@@ -989,12 +987,6 @@ a:hover {
   .footer-content {
     grid-template-columns: 1fr;
     text-align: center;
-  }
-  
-  .footer-links h3::after,
-  .footer-social h3::after {
-    left: 50%;
-    transform: translateX(-50%);
   }
   
   .social-icons {
@@ -1013,14 +1005,30 @@ a:hover {
     font-size: 1.6rem;
   }
   
+  /* Mantém os botões lado a lado mesmo em telas pequenas */
   .hero-buttons {
-    flex-direction: column;
-    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.75rem;
   }
   
   .hero-buttons .btn {
-    width: 100%;
-    text-align: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    min-width: 110px;
+  }
+  
+  /* Apenas para telas muito pequenas, permite quebra */
+  @media (max-width: 360px) {
+    .hero-buttons {
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    .hero-buttons .btn {
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
   }
   
   .about {
@@ -1050,4 +1058,35 @@ a:hover {
     width: 2.5rem;
     height: 2.5rem;
   }
+}
+
+/* Animação para o menu dropdown */
+@keyframes slideDown {
+  from {
+    top: -300px;
+    opacity: 0;
+  }
+  to {
+    top: 100%;
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    top: 100%;
+    opacity: 1;
+  }
+  to {
+    top: -300px;
+    opacity: 0;
+  }
+}
+
+.nav-links.active {
+  animation: slideDown 0.3s forwards;
+}
+
+.nav-links.closing {
+  animation: slideUp 0.3s forwards;
 }
