@@ -722,7 +722,6 @@ a:hover {
 
 .footer-divider {
   height: 2px;
-  background: linear-gradient(to right, transparent, var(--primary-color), transparent);
   margin-bottom: 3rem;
   opacity: 0.3;
 }
